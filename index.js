@@ -27,3 +27,12 @@ function create() {
 
 
 }
+function checkDeplacement(e) {
+  if (e.keyCode == 39) {
+    shipX += 5;
+  }
+  if (e.keyCode == 37) {
+    shipX -= 4;
+
+  }
+}
