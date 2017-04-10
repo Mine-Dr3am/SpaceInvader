@@ -55,8 +55,9 @@ function create() {
     }
   }
 function update(){
-  starfield.tilePosition.y +=2;
-  if (game.time.now > firingTimer)
+  starfield.tilePosition.y +=2; // scrolling background
+
+  if (game.time.now > firingTimer) //if we can shoot, we have to wait a let
   {
       enemyFires();
   }
