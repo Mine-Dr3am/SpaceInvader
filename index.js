@@ -7,14 +7,17 @@ var livingEnemies = [];
 var Lives;
 var player;
 var cursors;
+var ShipBullets
 
-function preload() {
+function preload()
+{
   //Import somes pictures
-  game.load.spritesheet('ship', 'pictures/player.png', 32, 48);
-  game.load.spritesheet('invader', 'pictures/invader32x32x4.png', 32, 32);
-  game.load.image('bulletInvader', 'pictures/enemy-bullet.png');
-  game.load.image('starfield', 'pictures/starfield.png');
-  game.load.image('kaboom', 'pictures/explode.png');
+    game.load.spritesheet('ship', 'pictures/player.png', 32, 48);
+    game.load.spritesheet('invader', 'pictures/invader32x32x4.png', 32, 32);
+    game.load.image('bulletInvader', 'pictures/enemy-bullet.png');
+    game.load.image('starfield', 'pictures/starfield.png');
+    game.load.image('kaboom', 'pictures/explode.png');
+    game.load.image('bul²let', 'pictures/bullet.png');
 }
 
 function create() {
@@ -28,7 +31,7 @@ function create() {
     aliens.physicsBodyType = Phaser.Physics.ARCADE;
     createInvader();
 
-    //  The hero!
+  //  The hero!
     player = game.add.sprite(400, 500, 'ship');
     player.anchor.setTo(0.5, 0.5);
     game.physics.enable(player, Phaser.Physics.ARCADE);
@@ -42,46 +45,66 @@ function create() {
     enemyBullets.setAll('anchor.y', 1);
     enemyBullets.setAll('outOfBoundsKill', true); // Kill the bullet if it's across the window's game
     enemyBullets.setAll('checkWorldBounds', true); // We check the world's bound
+
+  // This ship was upgrade ! Bullets !
+    ShipBullets = game.add.group(); // Create bulelt Group
+    ShipBullets.enableBody = true;
+    ShipBullets.physicsBodyType = Phaser.Physics.ARCADE;
+    ShipBullets.createMultiple(30, 'bullet');
+    ShipBullets.setAll('anchor.x', 0.5);
+    ShipBullets.setAll('anchor.y', 1);
+    ShipBullets.setAll('outOfBoundsKill', true); // Kill the bullet if it's across the window's game
+    ShipBullets.setAll('checkWorldBounds', true); // We check the world's bound
+
   //Live
     Lives = game.add.group();
     game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
 
     //Display player lives with ship pictures
     for (var i = 0; i < 3; i++)
-    {
+      {
         var ship = Lives.create(game.world.width - 100 + (30 * i), 60, 'ship'); //Create a ship picture
         ship.anchor.setTo(0.5, 0.5);
         ship.angle = 90; // rotation
         ship.alpha = 0.4; // opacity
-    }
+      }
   }
+
 function update(){
   starfield.tilePosition.y +=2; // scrolling background
   cursors = game.input.keyboard.createCursorKeys();
 
   if (game.time.now > firingTimer) //if we can shoot, we have to wait
-  {
+    {
       enemyFires();
-  }
+    }
 
   if (player.alive){
-      //  Reset the player, then check for movement keys
+    //  Reset the player, then check for movement keys
       player.body.velocity.setTo(0, 0);
 
-      if (cursors.left.isDown && player.x > 16){
+      if (cursors.left.isDown && player.x > 16)
+        {
           player.body.velocity.x = -200;
-      }else if (cursors.right.isDown && player.x < 784){
+        }
+      else if (cursors.right.isDown && player.x < 784)
+        {
           player.body.velocity.x += 200;
+        }
+      if (cursors.up.isDown && player.y > 300)
+      {
+        player.body.velocity.y -= 200;
+      }
+      if (cursors.down.isDown && player.y < 584)
+      {
+        player.body.velocity.y += 200;
       }
       cursors = game.input.keyboard.createCursorKeys();
       fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   }
-  
-
-
 }
 
-  function createInvader()
+function createInvader()
   //Function which create a list of invader 10 by 4 lines (v look for loop v)
   {
     for(var x = 0; x < 10; x++)
@@ -105,42 +128,41 @@ function update(){
     tween.onLoop.add(descend, this);
   }
 
-  function descend() { //Aliens descend
+  function descend()
+  { //Aliens descend
     aliens.y += 10;
   }
+
   function setupInvader(invader)
   {
     invader.anchor.x = 0.5;
     invader.anchor.y = 0.5;
     invader.animation.add('kaboom');
-
   }
-  function enemyFires () {
-
-      //  Grab the first bullet we can from the pool
+  function enemyFires ()
+  {
+    //  Grab the first bullet we can from the pool
       enemyBullet = enemyBullets.getFirstExists(false);
 
       livingEnemies.length=0; //the array set on 0
 
       aliens.forEachAlive(function(alien){ // We foreach all the alien which is alive
 
-          // put every living enemy in an array
-          livingEnemies.push(alien);
+    // put every living enemy in an array
+      livingEnemies.push(alien);
       });
-
 
       if (enemyBullet && livingEnemies.length > 0) //if bullet enemy existing and if they are enemy(ies) in my array
       {
+        var random=game.rnd.integerInRange(0,livingEnemies.length-1);
 
-          var random=game.rnd.integerInRange(0,livingEnemies.length-1);
-
-          // randomly select one of them
+        // randomly select one of them
           var shooter=livingEnemies[random];
-          // FIIIIIRE !
+        // FIIIIIRE !
           enemyBullet.reset(shooter.body.x, shooter.body.y);
-          //Bullet move to the player
+        //Bullet move to the player
           game.physics.arcade.moveToObject(enemyBullet,player,120);
-          //After we wait before fire.
-          firingTimer = game.time.now + 2000;
+        //After we wait before fire.
+          firingTimer = game.time.now + 500;
       }
   }
