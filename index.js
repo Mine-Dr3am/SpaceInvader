@@ -4,6 +4,8 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 var aliens;
 var firingTimer = 0;
 var livingEnemies = [];
+var Lives;
+var player;
 
 function preload() {
   //Import somes pictures
@@ -30,16 +32,27 @@ function create() {
     player.anchor.setTo(0.5, 0.5);
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
-  // The enemy's bullets
-    enemyBullets = game.add.group();
+  // The more bullet enemy they are, the more it's fun !
+    enemyBullets = game.add.group(); // Create bulelt Group
     enemyBullets.enableBody = true;
     enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
     enemyBullets.createMultiple(30, 'bulletInvader');
     enemyBullets.setAll('anchor.x', 0.5);
     enemyBullets.setAll('anchor.y', 1);
-    enemyBullets.setAll('outOfBoundsKill', true);
-    enemyBullets.setAll('checkWorldBounds', true);
+    enemyBullets.setAll('outOfBoundsKill', true); // Kill the bullet if it's across the window's game
+    enemyBullets.setAll('checkWorldBounds', true); // We check the world's bound
+  //Live
+    Lives = game.add.group();
+    game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
 
+    //Display player lives with ship pictures
+    for (var i = 0; i < 3; i++)
+    {
+        var ship = Lives.create(game.world.width - 100 + (30 * i), 60, 'ship'); //Create a ship picture
+        ship.anchor.setTo(0.5, 0.5);
+        ship.angle = 90; // rotation
+        ship.alpha = 0.4; // opacity
+    }
   }
 function update(){
   starfield.tilePosition.y +=2;
@@ -90,27 +103,27 @@ function update(){
       //  Grab the first bullet we can from the pool
       enemyBullet = enemyBullets.getFirstExists(false);
 
-      livingEnemies.length=0;
+      livingEnemies.length=0; //the array set on 0
 
-      aliens.forEachAlive(function(alien){
+      aliens.forEachAlive(function(alien){ // We foreach all the alien which is alive
 
           // put every living enemy in an array
           livingEnemies.push(alien);
       });
 
 
-      if (enemyBullet && livingEnemies.length > 0)
+      if (enemyBullet && livingEnemies.length > 0) //if bullet enemy existing and if they are enemy(ies) in my array
       {
 
           var random=game.rnd.integerInRange(0,livingEnemies.length-1);
 
           // randomly select one of them
           var shooter=livingEnemies[random];
-          // And fire the bullet from this enemy
+          // FIIIIIRE !
           enemyBullet.reset(shooter.body.x, shooter.body.y);
-
+          //Bullet move to the player
           game.physics.arcade.moveToObject(enemyBullet,player,120);
+          //After we wait before fire.
           firingTimer = game.time.now + 2000;
       }
-
   }
