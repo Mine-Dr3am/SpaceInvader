@@ -14,6 +14,7 @@ function preload() {
   game.load.image('bulletInvader', 'pictures/enemy-bullet.png');
   game.load.image('starfield', 'pictures/starfield.png');
   game.load.image('kaboom', 'pictures/explode.png');
+  game.load.image('bulletPlayer', 'pictures/bullet.png');
 }
 
 function create() {
