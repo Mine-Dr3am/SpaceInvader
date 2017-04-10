@@ -2,6 +2,8 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 
 //Initialisation des variables
 var aliens;
+var firingTimer = 0;
+var livingEnemies = [];
 
 function preload() {
   //Import somes pictures
@@ -23,6 +25,11 @@ function create() {
     aliens.physicsBodyType = Phaser.Physics.ARCADE;
     createInvader();
 
+    //  The hero!
+    player = game.add.sprite(400, 500, 'ship');
+    player.anchor.setTo(0.5, 0.5);
+    game.physics.enable(player, Phaser.Physics.ARCADE);
+
   // The enemy's bullets
     enemyBullets = game.add.group();
     enemyBullets.enableBody = true;
@@ -35,7 +42,13 @@ function create() {
 
   }
 function update(){
-  
+  starfield.tilePosition.y +=2;
+  if (game.time.now > firingTimer)
+  {
+      enemyFires();
+  }
+
+
 }
 
   function createInvader()
@@ -71,7 +84,8 @@ function update(){
     invader.anchor.y = 0.5;
     invader.animation.add('kaboom');
 
-  }function enemyFires () {
+  }
+  function enemyFires () {
 
       //  Grab the first bullet we can from the pool
       enemyBullet = enemyBullets.getFirstExists(false);
